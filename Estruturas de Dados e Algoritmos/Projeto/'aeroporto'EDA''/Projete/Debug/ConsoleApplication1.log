@@ -1,0 +1,28 @@
+﻿Build started 01/05/2017 16:08:30.
+     1>Project "C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\ConsoleApplication1.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (ConsoleApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "..\..\'aeroporto'EDA''\Projete\arvorebinariapassageiros.cpp" "..\..\'aeroporto'EDA''\Projete\aviao.cpp" "..\..\'aeroporto'EDA''\Projete\Emergencia.cpp" "..\..\'aeroporto'EDA''\Projete\gravar.cpp" passageiros.cpp main.cpp
+         main.cpp
+     1>c:\users\ricar\desktop\'aeroporto'eda''\projete\main.cpp(18): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+         passageiros.cpp
+     1>c:\users\ricar\desktop\'aeroporto'eda''\projete\passageiros.cpp(18): warning C4244: 'initializing' : conversion from '__int64' to 'int', possible loss of data
+         gravar.cpp
+         Emergencia.cpp
+         aviao.cpp
+     1>c:\users\ricar\desktop\'aeroporto'eda''\projete\aviao.cpp(20): warning C4244: 'initializing' : conversion from '__int64' to 'int', possible loss of data
+         arvorebinariapassageiros.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\Debug\aeroporto'EDA'.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\Debug\aeroporto'EDA'.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\Debug\aeroporto'EDA'.lib" /MACHINE:X86 Debug\arvorebinariapassageiros.obj
+         Debug\aviao.obj
+         Debug\Emergencia.obj
+         Debug\gravar.obj
+         Debug\passageiros.obj
+         Debug\main.obj
+         ConsoleApplication1.vcxproj -> C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\Debug\aeroporto'EDA'.exe
+     1>Done Building Project "C:\Users\ricar\Desktop\'aeroporto'EDA''\Projete\ConsoleApplication1.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.70

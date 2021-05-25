@@ -1,0 +1,2 @@
+xst -intstyle ise -ifn "C:/Xilinx/ac18/Projeto2018verilog/Projeto2018.xst" -ofn "C:/Xilinx/ac18/Projeto2018verilog/Projeto2018.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -i -p xc3s1600e-fg320-4 Projeto2018.ngc Projeto2018.ngd  

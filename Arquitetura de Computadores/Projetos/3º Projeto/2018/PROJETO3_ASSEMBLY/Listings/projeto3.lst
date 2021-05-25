@@ -1,0 +1,210 @@
+A51 MACRO ASSEMBLER  PROJETO3                                                             06/06/2019 15:23:02 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\projeto3.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE projeto3.a51 SET(SMALL) DEBUG PRINT(.\Listings\projeto3.lst) OBJECT(.\O
+                      bjects\projeto3.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  0064                 1     fimTempo EQU 0x64  
+  0003                 2     zero EQU 3  
+  000C                 3     centoOitenta EQU 12  
+  000D                 4     atraso EQU 0x0D  
+                       5     
+  00B2                 6     sensorLuz EQU P3.2; //pino de controlo do sensor
+  0090                 7     servo EQU P1.0; //pino de controlo do servo motor
+  0091                 8     led EQU P1.1; //pino do led
+                       9     
+  0000                10     conta EQU 0; //contador que incrementa a cada 200us
+  0000                11     conta2 EQU 0; //tempo de espera entre mudanчa de angulos
+  0003                12     referencia EQU 3; //o servo motor comeчa nos 0║
+                      13     
+  0001                14     atualiza EQU 1;
+                      15     
+  0000                16     luzdetetada EQU 0; //o servo motor comeчa nos 0║
+                      17     
+  0037                18     TempoL EQU 0x37 ; Valor do byte menos significativo para o temporizador
+  0037                19     TempoH EQU 0x37 ; Valor do byte mais significativo para o temporizador
+                      20     
+                      21     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                      22     ;лл primeira instuчуo apєs reset do microcontrolador
+                      23     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+----                  24     CSEG AT 0000H
+0000 804E             25             JMP INICIO
+                      26     
+                      27     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                      28     ;лл se ocorrer interrupчуo externa
+                      29     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+----                  30     CSEG AT 0013H
+0013 01C7             31             JMP INTERRUP_EXT0
+                      32             
+                      33     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                      34     ;лл tratamento da interrupчуo de temporizaчуo 0, para contar 20ms
+                      35     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+----                  36     CSEG AT 000BH
+000B 01CC             37             JMP INTERRUP_TEMP0
+                      38     
+                      39     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                      40     ;лл inicio do programa
+                      41     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+----                  42     CSEG AT 0050H ;coloca as instruчїes a partir do endereчo 50h
+0050                  43     INICIO:
+0050 758107           44             MOV SP, #7 ;endereчo da stackpointer
+0053 11AA             45             CALL INIT ;chama rotina de inicializaчїes
+                      46             
+                      47     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                      48     ;лл programa principal
+                      49     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+0055                  50     PRINCIPAL:
+                      51             ;if(conta == referencia)
+0055 E503             52             MOV A, referencia
+0057 88F0             53             MOV B, R0
+0059 B5F002           54             CJNE A, B, segundo_if
+005C C290             55                     CLR servo
+                      56             
+005E                  57     segundo_if:
+A51 MACRO ASSEMBLER  PROJETO3                                                             06/06/2019 15:23:02 PAGE     2
+
+                      58             ;if(conta == fimTempo)
+005E E8               59             MOV A, R0
+005F 8AF0             60             MOV B, R2
+0061 B5F007           61             CJNE A, B, terceiro_if
+0064 E4               62                     CLR A
+0065 F8               63                     MOV R0, A
+0066 D290             64                     SETB servo
+0068 E9               65                     MOV A, R1
+0069 04               66                     INC A
+006A F9               67                     MOV R1, A
+                      68     
+006B                  69             terceiro_if:            ;if(conta2 == atraso)
+006B E9               70                     MOV A, R1
+006C 8CF0             71                     MOV B, R4
+006E B5F0E4           72                     CJNE A, B, PRINCIPAL
+                      73                     
+0071 ED               74                             MOV A, R5
+0072 B40109           75                             CJNE A, #01H, sub_else
+0075 30B22D           76                                     JNB sensorluz, fim_sub
+0078 7D00             77                                             MOV R5, #00H
+007A D291             78                                             SETB led
+007C 8027             79                                             JMP fim_sub
+007E                  80                     sub_else:
+007E E503             81                             MOV A, referencia
+0080 850CF0           82                             MOV B, centoOitenta
+0083 B5F003           83                             CJNE A, B, compZero
+0086 750102           84                                     MOV atualiza, #02H
+0089                  85                     compZero:
+0089 E503             86                             MOV A, zero
+008B 8503F0           87                             MOV B, referencia
+008E B5F003           88                             CJNE A, B, atual
+0091 750101           89                                     MOV atualiza, #01H
+                      90                             
+0094                  91                     atual:
+0094 E501             92                             MOV A, atualiza
+0096 B40107           93                             CJNE A, #01H, sub_atual
+0099 E503             94                                     MOV A, referencia
+009B 04               95                                     INC A
+009C F503             96                                     MOV referencia, A
+009E 8005             97                             JMP fim_sub
+00A0                  98                     sub_atual:
+00A0 E503             99                             MOV A, referencia
+00A2 14              100                             DEC A
+00A3 F503            101                             MOV referencia, A
+00A5                 102     fim_sub:
+00A5 E9              103             MOV A, R1
+00A6 E4              104             CLR A
+00A7 F9              105             MOV R1, A
+00A8 80AB            106             JMP PRINCIPAL
+                     107             
+                     108     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                     109     ;лл Rotina de inicializaчїes
+                     110     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+00AA                 111     INIT:
+00AA 75A883          112             MOV IE, #10000011b ; activa as interrupчїes globais, timer 0 e externa 0
+00AD 758902          113             MOV TMOD, #00000010b ; Activa temporizador no modo 2, contador com registo de 8-bit
+                              (TL0) com auto reload
+                     114             ;configuraчуo timer 200us
+00B0 758A37          115             MOV TL0, #TempoL ; Valor do byte menos significativo
+00B3 758C37          116             MOV TH0, #TempoH ; Valor do byte mais significativo
+                     117             ;Configuracao Registo TCON
+00B6 D28C            118             SETB TR0 ; Activa o temporizador 0
+00B8 D288            119             SETB IT0 ; A interrupчуo externa vai ser detectada na transiчуo descendente (0->1)
+                     120             
+00BA 7800            121             MOV R0, #conta ;R0 - timer
+00BC 7900            122             MOV R1, #conta2 ;R1 - conta2
+A51 MACRO ASSEMBLER  PROJETO3                                                             06/06/2019 15:23:02 PAGE     3
+
+00BE 7A64            123             MOV R2, #fimTempo ;R1 - conta2
+00C0 7C0D            124             MOV R4, #atraso
+00C2 7D00            125             MOV R5, #luzdetetada
+00C4 D291            126             SETB led ;led desligado
+                     127             
+00C6 22              128             RET
+                     129             
+                     130     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                     131     ;лл tratamento interrupчуo externa
+                     132     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+00C7                 133     INTERRUP_EXT0:
+00C7 7D01            134             MOV R5, #01H
+00C9 C291            135             CLR led ;liga led
+00CB 32              136             RETI
+                     137     
+                     138             ;ллллллллллллллллллллллллллллллллллллллллллллллллллл
+                     139     ;лл tratamento interrupчуo do timer0
+                     140     ;ллллллллллллллллллллллллллллллллллллллллллллллллллл    
+00CC                 141     INTERRUP_TEMP0:
+00CC 08              142             INC R0 ;incrementa a cada contagem de 200us
+00CD 32              143             RETI
+                     144             
+                     145     END
+A51 MACRO ASSEMBLER  PROJETO3                                                             06/06/2019 15:23:02 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ATRASO . . . . . .  N NUMB   000DH   A   
+ATUAL. . . . . . .  C ADDR   0094H   A   
+ATUALIZA . . . . .  N NUMB   0001H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+CENTOOITENTA . . .  N NUMB   000CH   A   
+COMPZERO . . . . .  C ADDR   0089H   A   
+CONTA. . . . . . .  N NUMB   0000H   A   
+CONTA2 . . . . . .  N NUMB   0000H   A   
+FIMTEMPO . . . . .  N NUMB   0064H   A   
+FIM_SUB. . . . . .  C ADDR   00A5H   A   
+IE . . . . . . . .  D ADDR   00A8H   A   
+INICIO . . . . . .  C ADDR   0050H   A   
+INIT . . . . . . .  C ADDR   00AAH   A   
+INTERRUP_EXT0. . .  C ADDR   00C7H   A   
+INTERRUP_TEMP0 . .  C ADDR   00CCH   A   
+IT0. . . . . . . .  B ADDR   0088H.0 A   
+LED. . . . . . . .  B ADDR   0090H.1 A   
+LUZDETETADA. . . .  N NUMB   0000H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PRINCIPAL. . . . .  C ADDR   0055H   A   
+REFERENCIA . . . .  N NUMB   0003H   A   
+SEGUNDO_IF . . . .  C ADDR   005EH   A   
+SENSORLUZ. . . . .  B ADDR   00B0H.2 A   
+SERVO. . . . . . .  B ADDR   0090H.0 A   
+SP . . . . . . . .  D ADDR   0081H   A   
+SUB_ATUAL. . . . .  C ADDR   00A0H   A   
+SUB_ELSE . . . . .  C ADDR   007EH   A   
+TEMPOH . . . . . .  N NUMB   0037H   A   
+TEMPOL . . . . . .  N NUMB   0037H   A   
+TERCEIRO_IF. . . .  C ADDR   006BH   A   
+TH0. . . . . . . .  D ADDR   008CH   A   
+TL0. . . . . . . .  D ADDR   008AH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . .  B ADDR   0088H.4 A   
+ZERO . . . . . . .  N NUMB   0003H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
