@@ -1,0 +1,16 @@
+89445678 Cardiologia  
+78978945 Dermatologia
+22212515 Gastroenterologia
+35289153 Ortopedia
+65664889 Cardiologia
+32165498 MedicinaGeral
+86535136 Nefrologia
+32132131 Urologia
+35197461 Psicologia
+52198515 Pediatria
+98575486 Podologia
+12324516 Reumatologia
+32165224 Nutricao
+56044455 Dermatologia
+98621422 Gastroenterologia
+ 

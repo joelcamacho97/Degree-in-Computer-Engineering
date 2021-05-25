@@ -1,0 +1,27 @@
+fimTempo EQU 100 ;timer = 0.2ms -> fimTempoEQU100*0.2msEQU20ms
+frequencia EQU 50 ;timer = 0.2ms -> frequenciaEQU50*0.2msEQU10ms
+atraso EQU 25 ;50*20ms = 1s
+
+botao EQU 0; ;pino do botão
+ligar EQU 0;
+
+luz EQU P1.0; ;pino de controlo do luz motor
+S1 EQU P1.1;
+S2 EQU P3.2;
+trinco 	EQU 0;
+trinco2 EQU 0;
+
+palma EQU 0;
+
+palmas EQU 0;
+conta2 EQU 0;
+conta3 EQU 0;
+conta EQU 0; ;contador que incrementa a cada 200us
+conta_intensidade EQU 0;
+referencia EQU 50;
+
+main:
+	LCALL Init
+	CLR luz
+	JB S1
+	JB trinco,

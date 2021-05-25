@@ -1,0 +1,13 @@
+void gravar1();
+void ficheiro3();
+char* aviaoproximaçao();
+char* aviaopista();
+char* aviaodescolar();
+void emergencia();
+void gravar();
+void opcoes();
+char* Passag();
+char * aviao();
+void novoCiclo();
+void passagdoaviao();
+void tecla();

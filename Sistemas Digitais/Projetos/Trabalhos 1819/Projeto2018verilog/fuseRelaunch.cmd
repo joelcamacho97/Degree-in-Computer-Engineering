@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "C:/Users/joel/Desktop/Projeto2018verilog/Comparador_isim_beh.exe" -prj "C:/Users/joel/Desktop/Projeto2018verilog/Comparador_beh.prj" "work.Comparador" "work.glbl" 

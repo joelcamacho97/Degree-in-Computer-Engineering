@@ -1,0 +1,40 @@
+Release 14.7 ngdbuild P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+Command Line: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\ngdbuild.exe
+-intstyle ise -dd _ngo -nt timestamp -i -p xc3s1600e-fg320-4 Projeto2018.ngc
+Projeto2018.ngd
+
+Reading NGO file "C:/Xilinx/ac18/Projeto2018verilog/Projeto2018.ngc" ...
+Loading design module "C:\Xilinx\ac18\Projeto2018verilog/Projeto2018.ngc"...
+WARNING:NgdBuild:578 - Design contains no instances.
+Gathering constraint information from source properties...
+Done.
+
+Resolving constraint associations...
+Checking Constraint Associations...
+Done...
+
+Checking expanded design ...
+ERROR:NgdBuild:605 - logical root block 'Projeto2018' with type 'Projeto2018' is
+   unexpanded. Symbol 'Projeto2018' is not supported in target 'spartan3e'.
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+NGDBUILD Design Results Summary:
+  Number of errors:     1
+  Number of warnings:   1
+
+Total memory usage is 194124 kilobytes
+
+Total REAL time to NGDBUILD completion:  11 sec
+Total CPU time to NGDBUILD completion:   10 sec
+
+One or more errors were found during NGDBUILD.  No NGD file will be written.
+
+Writing NGDBUILD log file "Projeto2018.bld"...

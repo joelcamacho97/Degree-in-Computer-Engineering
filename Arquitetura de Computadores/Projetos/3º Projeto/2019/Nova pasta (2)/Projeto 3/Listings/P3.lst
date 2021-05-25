@@ -1,0 +1,395 @@
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE P3
+OBJECT MODULE PLACED IN .\Objects\P3.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE P3.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE PRINT(.\Listings\P
+                    -3.lst) TABS(2) OBJECT(.\Objects\P3.obj)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #define fimTempo 100 //timer = 0.2ms -> fimTempo=100*0.2ms=20ms
+   3          #define frequencia 50 //timer = 0.2ms -> frequencia=50*0.2ms=10ms
+   4          #define atraso 25 //50*20ms = 1s
+   5          
+   6          bit botao   = 0; //pino do botão
+   7          bit ligar   = 0;
+   8          
+   9          sbit luz    = P1^0; //pino de controlo do luz motor
+  10          sbit S1     = P1^1;
+  11          sbit S2     = P3^2;
+  12          bit trinco  = 0;
+  13          bit trinco2 = 0;
+  14          
+  15          //sbit MICRO  = P3^3;
+  16          bit palma = 0;
+  17          
+  18          unsigned char palmas = 0;
+  19          unsigned char conta2 = 0;
+  20          unsigned char conta3 = 0;
+  21          unsigned char conta = 0; //contador que incrementa a cada 200us
+  22          unsigned char conta_intensidade = 0;
+  23          unsigned char referencia = 50; //o luz motor começa nos 0º
+  24          //declaração de funções
+  25          void Init(void);
+  26          
+  27          void Init(void)
+  28          {
+  29   1      //Configuracao Registo IE
+  30   1      EA = 1; //ativa interrupcoes globais
+  31   1      ET0 = 1; // ativa interrupcao timer 0
+  32   1      EX1 = 1; // ativa interrupcao externa 0
+  33   1      //Configuracao Registo TMOD
+  34   1      TMOD &= 0xF0; //limpa os 4 bits do timer 0 (8 bits – auto reload)
+  35   1      TMOD |= 0x02; //modo 2 do timer 0
+  36   1      //Configuracao Timer 0
+  37   1      TH0 = 0x38; //Timer 0 - 200us
+  38   1      TL0 = 0x38;
+  39   1      //Configuracao Registo TCON
+  40   1      TR0 = 1; //comeca o timer 0
+  41   1      IT1 = 1; //interrupcao externa activa a falling edge
+  42   1      }
+  43          
+  44          //interrupcao externa
+  45          void External0_ISR(void) interrupt 2
+  46          {
+  47   1        palma = 1;
+  48   1      }
+  49          //interrupcao tempo
+  50          void Timer0_ISR(void) interrupt 1
+  51          {
+  52   1        conta++; //incrementa a cada contagem de 200us
+  53   1        conta3++;
+  54   1        if(ligar == 1)  conta_intensidade++;
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 2   
+
+  55   1      }
+  56          
+  57          void main(void) {
+  58   1      //inicializações
+  59   1      Init();
+  60   1      luz = 0;
+  61   1      while(1) //loop infinito
+  62   1      {
+  63   2        
+  64   2        if(S1 == 0 ){
+  65   3        if(trinco == 0){ // btn carrega a 0
+  66   4            luz = ~luz;
+  67   4            trinco = 1;
+  68   4          
+  69   4            if (luz == 1) {
+  70   5              conta_intensidade = 0;
+  71   5              ligar = 1;
+  72   5            } else ligar = 0;
+  73   4          }}else{
+  74   3        
+  75   3        if(S1 == 1) {
+  76   4          if(trinco == 1){
+  77   5          trinco = 0;
+  78   5        }}}
+  79   2        
+  80   2        if(conta == fimTempo){
+  81   3          conta = 0;
+  82   3          conta2++;
+  83   3        }
+  84   2      
+  85   2        if(palma == 1) {
+  86   3          if(palmas == 0){
+  87   4          
+  88   4          
+  89   4          }
+  90   3          if((conta3 >= 25 && conta2 <= atraso)){
+  91   4            palmas++;
+  92   4            conta3 = 0;
+  93   4          }else{
+  94   4            conta2 = 0;
+  95   4            conta3 = 0;
+  96   4            palmas = 0;
+  97   4          }
+  98   3          palma = 0;
+  99   3        } 
+ 100   2        if(palmas == 2){
+ 101   3          if(luz == 0){
+ 102   4            luz = 1;
+ 103   4            ligar = 1;
+ 104   4          }
+ 105   3          else {
+ 106   4            luz = 0;
+ 107   4            ligar = 0;
+ 108   4          }
+ 109   3          palmas = 0;
+ 110   3        } 
+ 111   2        
+ 112   2        
+ 113   2        if(S2 == 0 && trinco2 == 0) {
+ 114   3          if(referencia > 10){
+ 115   4            referencia = referencia - 10;
+ 116   4          } else referencia = 50;
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 3   
+
+ 117   3          trinco2 = 1;
+ 118   3        } else if ((S2 == 1 && trinco2 == 1)) trinco2 = 0;
+ 119   2      
+ 120   2        
+ 121   2       if(ligar == 1){
+ 122   3          if(conta_intensidade > referencia && conta_intensidade < frequencia){
+ 123   4            luz = 0;
+ 124   4          }else if (conta_intensidade >= frequencia ){
+ 125   4            conta_intensidade = 0;
+ 126   4            luz = 1;
+ 127   4            } else luz = 1;
+ 128   3        }
+ 129   2      
+ 130   2      } 
+ 131   1      }
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 4   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Init (BEGIN)
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+                                           ; SOURCE LINE # 30
+0000 D2AF              SETB    EA
+                                           ; SOURCE LINE # 31
+0002 D2A9              SETB    ET0
+                                           ; SOURCE LINE # 32
+0004 D2AA              SETB    EX1
+                                           ; SOURCE LINE # 34
+0006 5389F0            ANL     TMOD,#0F0H
+                                           ; SOURCE LINE # 35
+0009 438902            ORL     TMOD,#02H
+                                           ; SOURCE LINE # 37
+000C 758C38            MOV     TH0,#038H
+                                           ; SOURCE LINE # 38
+000F 758A38            MOV     TL0,#038H
+                                           ; SOURCE LINE # 40
+0012 D28C              SETB    TR0
+                                           ; SOURCE LINE # 41
+0014 D28A              SETB    IT1
+                                           ; SOURCE LINE # 42
+0016 22                RET     
+             ; FUNCTION Init (END)
+
+             ; FUNCTION External0_ISR (BEGIN)
+                                           ; SOURCE LINE # 45
+                                           ; SOURCE LINE # 47
+0000 D200        R     SETB    palma
+                                           ; SOURCE LINE # 48
+0002 32                RETI    
+             ; FUNCTION External0_ISR (END)
+
+             ; FUNCTION Timer0_ISR (BEGIN)
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 52
+0000 0500        R     INC     conta
+                                           ; SOURCE LINE # 53
+0002 0500        R     INC     conta3
+                                           ; SOURCE LINE # 54
+0004 300002      R     JNB     ligar,?C0004
+0007 0500        R     INC     conta_intensidade
+                                           ; SOURCE LINE # 55
+0009         ?C0004:
+0009 32                RETI    
+             ; FUNCTION Timer0_ISR (END)
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 57
+                                           ; SOURCE LINE # 59
+0000 120000      R     LCALL   Init
+                                           ; SOURCE LINE # 60
+0003 C290              CLR     luz
+0005         ?C0005:
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 62
+                                           ; SOURCE LINE # 64
+0005 209115            JB      S1,?C0007
+                                           ; SOURCE LINE # 65
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 5   
+
+0008 20001A      R     JB      trinco,?C0011
+                                           ; SOURCE LINE # 66
+000B B290              CPL     luz
+                                           ; SOURCE LINE # 67
+000D D200        R     SETB    trinco
+                                           ; SOURCE LINE # 69
+000F 309007            JNB     luz,?C0009
+                                           ; SOURCE LINE # 70
+0012 E4                CLR     A
+0013 F500        R     MOV     conta_intensidade,A
+                                           ; SOURCE LINE # 71
+0015 D200        R     SETB    ligar
+                                           ; SOURCE LINE # 72
+0017 800C              SJMP    ?C0011
+0019         ?C0009:
+0019 C200        R     CLR     ligar
+                                           ; SOURCE LINE # 73
+001B 8008              SJMP    ?C0011
+001D         ?C0007:
+                                           ; SOURCE LINE # 75
+001D 309105            JNB     S1,?C0011
+                                           ; SOURCE LINE # 76
+0020 300002      R     JNB     trinco,?C0011
+                                           ; SOURCE LINE # 77
+0023 C200        R     CLR     trinco
+                                           ; SOURCE LINE # 78
+0025         ?C0011:
+                                           ; SOURCE LINE # 80
+0025 E500        R     MOV     A,conta
+0027 6464              XRL     A,#064H
+0029 7004              JNZ     ?C0014
+                                           ; SOURCE LINE # 81
+002B F500        R     MOV     conta,A
+                                           ; SOURCE LINE # 82
+002D 0500        R     INC     conta2
+                                           ; SOURCE LINE # 83
+002F         ?C0014:
+                                           ; SOURCE LINE # 85
+002F 300026      R     JNB     palma,?C0015
+                                           ; SOURCE LINE # 86
+                                           ; SOURCE LINE # 89
+                                           ; SOURCE LINE # 90
+0032 C3                CLR     C
+0033 E500        R     MOV     A,conta3
+0035 9419              SUBB    A,#019H
+0037 7480              MOV     A,#080H
+0039 9480              SUBB    A,#080H
+003B 4012              JC      ?C0017
+003D D3                SETB    C
+003E E500        R     MOV     A,conta2
+0040 9419              SUBB    A,#019H
+0042 7480              MOV     A,#080H
+0044 9480              SUBB    A,#080H
+0046 5007              JNC     ?C0017
+                                           ; SOURCE LINE # 91
+0048 0500        R     INC     palmas
+                                           ; SOURCE LINE # 92
+004A E4                CLR     A
+004B F500        R     MOV     conta3,A
+                                           ; SOURCE LINE # 93
+004D 8007              SJMP    ?C0018
+004F         ?C0017:
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 6   
+
+                                           ; SOURCE LINE # 94
+004F E4                CLR     A
+0050 F500        R     MOV     conta2,A
+                                           ; SOURCE LINE # 95
+0052 F500        R     MOV     conta3,A
+                                           ; SOURCE LINE # 96
+0054 F500        R     MOV     palmas,A
+                                           ; SOURCE LINE # 97
+0056         ?C0018:
+                                           ; SOURCE LINE # 98
+0056 C200        R     CLR     palma
+                                           ; SOURCE LINE # 99
+0058         ?C0015:
+                                           ; SOURCE LINE # 100
+0058 E500        R     MOV     A,palmas
+005A 6402              XRL     A,#02H
+005C 7010              JNZ     ?C0019
+                                           ; SOURCE LINE # 101
+005E 209006            JB      luz,?C0020
+                                           ; SOURCE LINE # 102
+0061 D290              SETB    luz
+                                           ; SOURCE LINE # 103
+0063 D200        R     SETB    ligar
+                                           ; SOURCE LINE # 104
+0065 8004              SJMP    ?C0021
+0067         ?C0020:
+                                           ; SOURCE LINE # 105
+                                           ; SOURCE LINE # 106
+0067 C290              CLR     luz
+                                           ; SOURCE LINE # 107
+0069 C200        R     CLR     ligar
+                                           ; SOURCE LINE # 108
+006B         ?C0021:
+                                           ; SOURCE LINE # 109
+006B E4                CLR     A
+006C F500        R     MOV     palmas,A
+                                           ; SOURCE LINE # 110
+006E         ?C0019:
+                                           ; SOURCE LINE # 113
+006E 20B21D            JB      S2,?C0022
+0071 20001A      R     JB      trinco2,?C0022
+                                           ; SOURCE LINE # 114
+0074 D3                SETB    C
+0075 E500        R     MOV     A,referencia
+0077 940A              SUBB    A,#0AH
+0079 7480              MOV     A,#080H
+007B 9480              SUBB    A,#080H
+007D 4008              JC      ?C0023
+                                           ; SOURCE LINE # 115
+007F 74F6              MOV     A,#0F6H
+0081 2500        R     ADD     A,referencia
+0083 F500        R     MOV     referencia,A
+                                           ; SOURCE LINE # 116
+0085 8003              SJMP    ?C0024
+0087         ?C0023:
+0087 750032      R     MOV     referencia,#032H
+008A         ?C0024:
+                                           ; SOURCE LINE # 117
+008A D200        R     SETB    trinco2
+                                           ; SOURCE LINE # 118
+008C 8008              SJMP    ?C0025
+008E         ?C0022:
+C51 COMPILER V9.60.0.0   P3                                                                06/01/2019 02:11:56 PAGE 7   
+
+008E 30B205            JNB     S2,?C0025
+0091 300002      R     JNB     trinco2,?C0025
+0094 C200        R     CLR     trinco2
+0096         ?C0025:
+                                           ; SOURCE LINE # 121
+0096 200003      R     JB      ligar,$ + 6H
+0099 020000      R     LJMP    ?C0005
+                                           ; SOURCE LINE # 122
+009C E500        R     MOV     A,conta_intensidade
+009E D3                SETB    C
+009F 9500        R     SUBB    A,referencia
+00A1 400F              JC      ?C0028
+00A3 E500        R     MOV     A,conta_intensidade
+00A5 9432              SUBB    A,#032H
+00A7 7480              MOV     A,#080H
+00A9 9480              SUBB    A,#080H
+00AB 5005              JNC     ?C0028
+                                           ; SOURCE LINE # 123
+00AD C290              CLR     luz
+                                           ; SOURCE LINE # 124
+00AF 020000      R     LJMP    ?C0005
+00B2         ?C0028:
+00B2 C3                CLR     C
+00B3 E500        R     MOV     A,conta_intensidade
+00B5 9432              SUBB    A,#032H
+00B7 7480              MOV     A,#080H
+00B9 9480              SUBB    A,#080H
+00BB 4008              JC      ?C0030
+                                           ; SOURCE LINE # 125
+00BD E4                CLR     A
+00BE F500        R     MOV     conta_intensidade,A
+                                           ; SOURCE LINE # 126
+00C0 D290              SETB    luz
+                                           ; SOURCE LINE # 127
+00C2 020000      R     LJMP    ?C0005
+00C5         ?C0030:
+00C5 D290              SETB    luz
+                                           ; SOURCE LINE # 128
+                                           ; SOURCE LINE # 130
+00C7 020000      R     LJMP    ?C0005
+             ; FUNCTION main (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    238    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      5    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
